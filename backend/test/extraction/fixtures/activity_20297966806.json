@@ -1,0 +1,21 @@
+{
+  "sessionName": "demo session",
+  "boat": "Demo Boat",
+  "windDirection": "123",
+  "windSpeed": "12",
+  "windGust": "17",
+  "waveHeightM": "0.8",
+  "rideHeightOffsetCm": "-24",
+  "notes": "Synthetic fixture data for parser tests.",
+  "start_ts": "2025-09-06T10:30:00Z",
+  "end_ts": "2025-09-06T12:36:00Z",
+  "races": [
+    {
+      "id": "188e5779-006e-4fb3-b9d1-754e193e4d34",
+      "name": "Race 1",
+      "startTime": "2025-09-06T08:34:20.000Z",
+      "finish_ts": "2025-09-06T08:52:43.000Z"
+    }
+  ],
+  "exportedAt": "2026-03-06T19:21:55.563Z"
+}

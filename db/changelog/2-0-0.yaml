@@ -1,0 +1,94 @@
+databaseChangeLog:
+    - include:
+          file: 0-1-0.yaml
+          relativeToChangelogFile: true
+    - changeSet:
+          id: "200"
+          author: johann
+          changes:
+              - addColumn:
+                    tableName: session_event
+                    columns:
+                        - column:
+                              name: foiling
+                              type: boolean
+                              defaultValueBoolean: false
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: "201"
+          author: codex
+          changes:
+              - addColumn:
+                    tableName: session_event
+                    columns:
+                        - column:
+                              name: latitude
+                              type: REAL
+                        - column:
+                              name: longitude
+                              type: REAL
+    - changeSet:
+          id: "202"
+          author: codex
+          changes:
+              - modifyDataType:
+                    tableName: session
+                    columnName: start_at
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: session
+                    columnName: end_at
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: session_event
+                    columnName: start_time
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: session_event
+                    columnName: end_time
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: channel_data_real
+                    columnName: timestamp
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: channel_data_boolean
+                    columnName: timestamp
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: channel_data_string
+                    columnName: timestamp
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: race
+                    columnName: start_time
+                    newDataType: TIMESTAMPTZ
+              - modifyDataType:
+                    tableName: race
+                    columnName: finish_time
+                    newDataType: TIMESTAMPTZ
+    - changeSet:
+          id: "203"
+          author: codex
+          changes:
+              - addColumn:
+                    tableName: session
+                    columns:
+                        - column:
+                              name: location
+                              type: TEXT
+    - changeSet:
+          id: "204"
+          author: codex
+          changes:
+              - dropForeignKeyConstraint:
+                    baseTableName: session
+                    constraintName: fk_session_boat
+              - addForeignKeyConstraint:
+                    baseTableName: session
+                    baseColumnNames: boat_id
+                    referencedTableName: boat
+                    referencedColumnNames: id
+                    constraintName: fk_session_boat
+                    onDelete: CASCADE

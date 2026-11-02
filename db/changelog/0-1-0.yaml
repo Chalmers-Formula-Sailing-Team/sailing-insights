@@ -1,0 +1,509 @@
+databaseChangeLog:
+    - changeSet:
+          id: "0"
+          author: johann
+          changes:
+              - sql:
+                    sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    - changeSet:
+          id: "1"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: boat_class
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(50)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: length
+                              type: REAL
+                        - column:
+                              name: width
+                              type: REAL
+                        - column:
+                              name: foiling
+                              type: boolean
+    - changeSet:
+          id: "2"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: boat
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(50)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: class_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: sailnumber
+                              type: varchar(20)
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: "3"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: session
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: start_at
+                              type: TIMESTAMP
+                        - column:
+                              name: end_at
+                              type: TIMESTAMP
+                        - column:
+                              name: boat_id
+                              type: UUID
+                        - column:
+                              name: athlete_id
+                              type: varchar(100)
+                        - column:
+                              name: source
+                              type: varchar(100)
+                        - column:
+                              name: wind_amt_manual
+                              type: REAL
+                        - column:
+                              name: wind_dir_manual
+                              type: INTEGER
+    - changeSet:
+          id: "4"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: session_metric
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: session_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: value
+                              type: REAL
+                        - column:
+                              name: unit
+                              type: varchar(50)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: source
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: "5"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: session_event
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: session_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: event_type
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: start_time
+                              type: TIMESTAMP
+                        - column:
+                              name: end_time
+                              type: TIMESTAMP
+                        - column:
+                              name: source
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: confidence
+                              type: REAL
+    - changeSet:
+          id: "6"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: session_channel
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: session_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: unit
+                              type: varchar(50)
+                        - column:
+                              name: source
+                              type: varchar(100)
+                        - column:
+                              name: is_derived
+                              type: boolean
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: "7"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: channel_data_real
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: channel_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: timestamp
+                              type: TIMESTAMP
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: value
+                              type: REAL
+                              constraints:
+                                  nullable: false
+              - createIndex:
+                    indexName: idx_channel_data_real_channel_id
+                    tableName: channel_data_real
+                    columns:
+                        - column:
+                              name: channel_id
+    - changeSet:
+          id: "8"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: channel_data_boolean
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: channel_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: timestamp
+                              type: TIMESTAMP
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: value
+                              type: boolean
+                              constraints:
+                                  nullable: false
+              - createIndex:
+                    indexName: idx_channel_data_boolean_channel_id
+                    tableName: channel_data_boolean
+                    columns:
+                        - column:
+                              name: channel_id
+    - changeSet:
+          id: "9"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: channel_data_string
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: channel_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: timestamp
+                              type: TIMESTAMP
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: value
+                              type: varchar(255)
+                              constraints:
+                                  nullable: false
+              - createIndex:
+                    indexName: idx_channel_data_string_channel_id
+                    tableName: channel_data_string
+                    columns:
+                        - column:
+                              name: channel_id
+    - changeSet:
+          id: "10"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: provenance_record
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: session_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: producer
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: produced_type
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: produced_name
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: action
+                              type: varchar(50)
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: "11"
+          author: johann
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: boat
+                    baseColumnNames: class_id
+                    referencedTableName: boat_class
+                    referencedColumnNames: id
+                    constraintName: fk_boat_class
+              - addForeignKeyConstraint:
+                    baseTableName: session
+                    baseColumnNames: boat_id
+                    referencedTableName: boat
+                    referencedColumnNames: id
+                    constraintName: fk_session_boat
+              - addForeignKeyConstraint:
+                    baseTableName: session_metric
+                    baseColumnNames: session_id
+                    referencedTableName: session
+                    referencedColumnNames: id
+                    constraintName: fk_session_metric_session
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: session_event
+                    baseColumnNames: session_id
+                    referencedTableName: session
+                    referencedColumnNames: id
+                    constraintName: fk_session_event_session
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: session_channel
+                    baseColumnNames: session_id
+                    referencedTableName: session
+                    referencedColumnNames: id
+                    constraintName: fk_session_channel_session
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: channel_data_real
+                    baseColumnNames: channel_id
+                    referencedTableName: session_channel
+                    referencedColumnNames: id
+                    constraintName: fk_channel_data_real_channel
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: channel_data_boolean
+                    baseColumnNames: channel_id
+                    referencedTableName: session_channel
+                    referencedColumnNames: id
+                    constraintName: fk_channel_data_boolean_channel
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: channel_data_string
+                    baseColumnNames: channel_id
+                    referencedTableName: session_channel
+                    referencedColumnNames: id
+                    constraintName: fk_channel_data_string_channel
+                    onDelete: CASCADE
+              - addForeignKeyConstraint:
+                    baseTableName: provenance_record
+                    baseColumnNames: session_id
+                    referencedTableName: session
+                    referencedColumnNames: id
+                    constraintName: fk_provenance_record_session
+                    onDelete: CASCADE
+    - changeSet:
+          id: "12"
+          author: johann
+          changes:
+              - sql:
+                    sql: 
+                        ALTER TABLE channel_data_real
+                          ALTER COLUMN "timestamp" TYPE TIMESTAMP WITH TIME ZONE
+                          USING "timestamp" AT TIME ZONE 'UTC';
+                        ALTER TABLE channel_data_boolean
+                          ALTER COLUMN "timestamp" TYPE TIMESTAMP WITH TIME ZONE
+                          USING "timestamp" AT TIME ZONE 'UTC';
+                        ALTER TABLE channel_data_string
+                          ALTER COLUMN "timestamp" TYPE TIMESTAMP WITH TIME ZONE
+                          USING "timestamp" AT TIME ZONE 'UTC';
+    - changeSet:
+          id: "13"
+          author: johann
+          changes:
+              - dropColumn:
+                    tableName: session
+                    columnName: wind_amt_manual
+              - dropColumn:
+                    tableName: session
+                    columnName: wind_dir_manual
+    - changeSet:
+          id: "14"
+          author: johann
+          changes:
+              - addColumn:
+                    tableName: session
+                    columns:
+                        - column:
+                              name: notes
+                              type: TEXT
+    - changeSet:
+          id: "15"
+          author: johann
+          changes:
+              - createTable:
+                    tableName: race
+                    columns:
+                        - column:
+                              name: id
+                              type: UUID
+                              defaultValueComputed: uuid_generate_v4()
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: session_id
+                              type: UUID
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: name
+                              type: varchar(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: start_time
+                              type: TIMESTAMP
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: finish_time
+                              type: TIMESTAMP
+                              constraints:
+                                  nullable: false
+              - createIndex:
+                    indexName: idx_race_session_id
+                    tableName: race
+                    columns:
+                        - column:
+                              name: session_id
+    - changeSet:
+          id: "16"
+          author: johann
+          changes:
+              - addForeignKeyConstraint:
+                    baseTableName: race
+                    baseColumnNames: session_id
+                    referencedTableName: session
+                    referencedColumnNames: id
+                    constraintName: fk_race_session
+                    onDelete: CASCADE

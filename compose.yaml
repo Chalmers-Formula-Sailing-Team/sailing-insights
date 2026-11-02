@@ -1,0 +1,73 @@
+services:
+  db:
+    image: postgres:18
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres_db_sailing}
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    image: ${BACKEND_IMAGE_NAME:-sailing-insights-backend}:${APP_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      API_CORS_ORIGINS: http://localhost:${FRONTEND_PORT:-8080},http://127.0.0.1:${FRONTEND_PORT:-8080}
+      SESSION_UPLOAD_DIR: /app/data/jobs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${BACKEND_PUBLIC_PORT:-8000}:8000"
+    volumes:
+      - ./data/jobs-prod:/app/data/jobs
+
+  frontend:
+    image: ${FRONTEND_IMAGE_NAME:-sailing-insights-frontend}:${APP_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+  db-dev:
+    profiles: ["dev"]
+    image: postgres:18
+    container_name: postgres_db_sailing_dev
+    restart: no
+    env_file:
+      - .env.dev
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./data/dev:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s

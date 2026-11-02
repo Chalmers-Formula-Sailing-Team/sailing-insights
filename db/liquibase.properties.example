@@ -1,0 +1,10 @@
+url=jdbc:postgresql://127.0.0.1:5435/sailing_dev
+username=sailing_app
+password=change-me
+changeLogFile=changelog/2-0-0.yaml
+
+# Linux:
+classpath=/usr/share/java/postgresql.jar
+
+# macOS Homebrew example:
+# classpath=/usr/local/Cellar/liquibase/4.33.0_1/libexec/internal/lib/postgresql.jar

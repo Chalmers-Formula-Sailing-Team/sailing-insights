@@ -1,0 +1,7 @@
+- [X] gybes are still classified as foiling if they are clearly not. Look at 2026-07-06 session
+- [X] add tests to adjusted foiling criterion
+- [X] unknown location in sessions overview card
+- [X] CRUD for sessions and races
+- [] ? try to improve rendering of past track in map
+- [X] CRUD for boats
+- [] Add classes to db (with foiling parameters)

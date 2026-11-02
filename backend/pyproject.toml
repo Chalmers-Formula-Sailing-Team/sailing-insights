@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sailing-backend"
+version = "0.0.0"
+dependencies = [
+    "pytest",
+    "numpy",
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+    "SQLAlchemy>=2.0",
+    "psycopg[binary]>=3.1",
+    "fitdecode",
+    "imageio-ffmpeg>=0.6.0"
+]
+
+[tool.setuptools]
+# This tells setuptools “packages live in *this* directory”
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
