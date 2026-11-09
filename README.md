@@ -1,54 +1,82 @@
 # sailing_insights
 This repo is about gathering insights from sailing sessions.
 
-## Environments
-- `.env` = prod/default
-- `.env.dev` = development
+## Setup
 
-The native backend uses `.env` automatically unless you explicitly set
-`SAILING_INSIGHTS_ENV_FILE=.env.dev`.
+### Requirements
+- Docker installed [https://docs.docker.com/desktop/]
+- Liquibase installed for database migrations [https://www.liquibase.com/download-community] or [https://formulae.brew.sh/formula/liquibase]
+- make sure npm is installed `npm --version` or install [https://docs.npmjs.com/downloading-and-installing-node-js-and-npm]
 
-## Run prod
-Use this when you want the full app stack in Docker: Postgres, backend API, and frontend.
-
-1. Copy the example environment and fill in local values:
-```bash
-cp .env.exmpl .env
-```
-
-2. Start the production stack:
-```bash
-docker compose up -d
-```
-
-3. Open the app:
-```text
-http://localhost:8080
-```
-
-Notes:
-- `docker compose up -d` starts the prod/default DB, backend container, and frontend container.
-- The backend container connects to the local Postgres container through the Compose network.
-- `docker compose up -d` uses the current `APP_VERSION` from `.env`.
-
-## Run dev
-Use this when you want only the dev database in Docker and run backend/frontend natively.
-
+### initial setup
 1. Copy the example development environment and fill in local values:
 ```bash
 cp .env.dev.exmpl .env.dev
 ```
+2. Make sure the docker deamon runs (start Docker desktop)
 
-2. Start only the dev Postgres database:
+3. Start the development Postgres database:
 ```bash
-docker compose up -d db-dev
+docker compose -f compose-dev.yaml up db-dev 
+```
+4. cd into db
+```bash
+cd db
+```
+5. copy the liquibase properties file
+```bash
+cp liquibase.properties.example liquibase.properties
 ```
 
-3. Start the backend API against `.env.dev`:
+6. Apply the migrations (create the tables)
+```bash
+liquibase --defaults-file=liquibase.properties update
+```
+
+7. Create virtual python environment for the backend
+```bash
+cd ../
+python -m venv backend/.venv
+```
+
+8. Activate the environment and install the packages
+```bash
+source backend/.venv/bin/activate
+pip install -e backend
+```
+
+7. Start the backend API against `.env.dev`:
+```bash
+SAILING_INSIGHTS_ENV_FILE=.env.dev uvicorn src.api:app --app-dir backend --reload --host 0.0.0.0 --port 8000
+```
+
+8. In a new terminal window we start the frontend:
+```bash
+cd frontend
+npm i
+npm run dev
+```
+
+## Run dev
+Running the software after the initial setup is a bit easier:
+
+1. Start the database 
+```bash
+docker compose -f compose-dev.yaml up db-dev 
+```
+
+2. start the backend (in a new terminal window)
 ```bash
 source backend/.venv/bin/activate
 pip install -e backend
 SAILING_INSIGHTS_ENV_FILE=.env.dev uvicorn src.api:app --app-dir backend --reload --host 0.0.0.0 --port 8000
+```
+
+3. start the frontend (in a new terminal window)
+```bash
+cd frontend
+npm i
+npm run dev
 ```
 
 Video overlay note:
@@ -56,42 +84,7 @@ Video overlay note:
 - If your environment was set up before this change, run `pip install -e backend` again.
 - The key video library is `imageio-ffmpeg`, which provides the ffmpeg binary used to burn the SOG overlay into the video.
 
-4. Start the frontend:
-```bash
-cd frontend
-npm i
-npm run dev
-```
 
-Notes:
-- Dev uses the isolated database in `.env.dev` on port `5435`.
-
-
-## Liquibase Migrations
-DEV:
-```bash
-cd db
-liquibase --defaults-file=liquibase.dev.properties update
-```
-
-PROD:
-```bash
-cd db
-liquibase --defaults-file=liquibase.properties update
-```
-
-## Init DB
-DEV:
-```bash
-cd db
-psql -U sailing_app -h localhost -p 5435 -d sailing_dev -f init.sql
-```
-
-PROD:
-```bash
-cd db
-psql -U sailing_app -h localhost -p 5434 -d sailing -f init.sql
-```
 
 ## Copyright
 Copyright (C) 2026 Chalmers Formula Sailing Team
